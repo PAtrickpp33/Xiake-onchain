@@ -1,0 +1,21 @@
+# Foundry
+out/
+cache/
+broadcast/
+*.log
+
+# Dependencies
+lib/
+
+# Env
+.env
+.env.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Deployment artifacts that aren't broadcast
+deployments/local/

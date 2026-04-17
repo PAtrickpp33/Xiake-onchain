@@ -1,0 +1,84 @@
+# ============================================================================
+# Jianghu Brawl · .gitignore
+# ============================================================================
+
+# ── Secrets ──────────────────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+**/.secrets
+
+# ── Node / npm ───────────────────────────────────────────────────────────────
+node_modules/
+dist/
+build/
+coverage/
+.nyc_output/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# Only commit package-lock or pnpm-lock, never both.
+# yarn.lock
+# pnpm-lock.yaml
+
+# ── TypeScript ───────────────────────────────────────────────────────────────
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# ── Foundry / Solidity ───────────────────────────────────────────────────────
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+contracts/lib/
+contracts/.gas-snapshot
+contracts/deployments/*.json
+!contracts/deployments/.gitkeep
+
+# Keep verified address receipts but not broadcast JSON (contains tx data).
+contracts/broadcast/**/run-latest.json
+contracts/broadcast/**/run-*.json
+
+# ── Skill build artifacts ────────────────────────────────────────────────────
+skill/dist/
+skill/node_modules/
+skill/.env
+
+# ── OS / editor ──────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+.idea/
+.vscode/*
+!.vscode/settings.example.json
+!.vscode/extensions.json
+*.sublime-workspace
+*.sublime-project
+
+# ── Logs & scratch ───────────────────────────────────────────────────────────
+logs/
+*.log
+tmp/
+.tmp/
+scratch/
+.cursor/
+.claude/
+.aider*
+
+# ── Demo artifacts (large, regenerable) ──────────────────────────────────────
+demo/recordings/*.cast
+demo/recordings/*.mp4
+demo/recordings/*.mov
+demo/recordings/*.gif
+!demo/recordings/.gitkeep
+
+# ── Generated docs / coverage ────────────────────────────────────────────────
+docs/_build/
+docs/.docusaurus/

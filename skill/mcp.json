@@ -1,0 +1,36 @@
+{
+  "$comment": "Example Claude Code MCP config — copy into ~/.config/claude-code/mcp.json (or the equivalent Cursor/Codex config) and fill in the real values.",
+  "mcpServers": {
+    "wuxia": {
+      "command": "node",
+      "args": ["./dist/index.js"],
+      "env": {
+        "BASE_SEPOLIA_RPC": "https://sepolia.base.org",
+        "WUXIA_HERO_ADDRESS": "0x0000000000000000000000000000000000000000",
+        "WUXIA_ARENA_ADDRESS": "0x0000000000000000000000000000000000000000",
+
+        "OKX_API_KEY": "replace-me",
+        "OKX_SECRET_KEY": "replace-me",
+        "OKX_PASSPHRASE": "replace-me",
+        "OKX_PROJECT_ID": "replace-me",
+
+        "ANTHROPIC_API_KEY": "replace-me"
+      }
+    },
+    "wuxia-npx": {
+      "$comment": "Alternative: use published npm package instead of a local build.",
+      "command": "npx",
+      "args": ["-y", "wuxia-skill"],
+      "env": {
+        "BASE_SEPOLIA_RPC": "https://sepolia.base.org",
+        "WUXIA_HERO_ADDRESS": "0x...",
+        "WUXIA_ARENA_ADDRESS": "0x...",
+        "OKX_API_KEY": "...",
+        "OKX_SECRET_KEY": "...",
+        "OKX_PASSPHRASE": "...",
+        "OKX_PROJECT_ID": "...",
+        "ANTHROPIC_API_KEY": "..."
+      }
+    }
+  }
+}
