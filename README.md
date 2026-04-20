@@ -6,6 +6,8 @@
 [![Claude Code](https://img.shields.io/badge/Claude_Code-skill-5B5BD6)](https://claude.ai/code) [![MCP](https://img.shields.io/badge/MCP-compatible-blueviolet)](https://modelcontextprotocol.io) [![Base Sepolia](https://img.shields.io/badge/Base_Sepolia-deployed-0052FF)](https://sepolia.basescan.org/address/0x567aE39f1E1081E85a1d13b7135ef2d3Ea1FcC61) [![OnchainOS](https://img.shields.io/badge/OnchainOS-integrated-00d1b2)](https://web3.okx.com/onchain-os/dev-portal) [![Tests](https://img.shields.io/badge/forge_tests-114/114_green-brightgreen)](./docs/C_LEVEL_TEST_SUMMARY.md) [![License](https://img.shields.io/badge/license-MIT-green)](#license)
 
 ---
+<img width="1148" height="527" alt="image" src="https://github.com/user-attachments/assets/1ee71082-7a06-4a67-b79e-f83799293f01" />
+
 
 ## 30-Second Pitch
 
