@@ -38,7 +38,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/PAtrickpp33/jianghu"
+    "url": "https://github.com/PAtrickpp33/Xiake-onchain"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
