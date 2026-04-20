@@ -838,7 +838,8 @@ async function withRetry<T>(label: string, fn: () => Promise<T>): Promise<T> {
 async function tryMirror(label: string, fn: () => Promise<`0x${string}`>): Promise<string | null> {
   try {
     const txHash = await withRetry(label, fn);
-    return `🔗 ${label} tx: ${txHash}`;
+    const { formatTxLine } = await import("./utils/txDisplay.js");
+    return formatTxLine(label, txHash);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     return `⚠️ ${label} 写链失败 (本地战报已记录): ${msg}`;
@@ -1380,7 +1381,10 @@ async function cmdMint(
       // Swallow: if the Wave 2 contract isn't deployed yet, keep local snapshot.
     }
 
-    if (isPaid) chainPaidCost = `${tierPriceEth(tier, count).toFixed(4)} ETH (tx: ${txHash})`;
+    if (isPaid) {
+      const { txUrl } = await import("./utils/txDisplay.js");
+      chainPaidCost = `${tierPriceEth(tier, count).toFixed(4)} ETH · ${txUrl(txHash)}`;
+    }
   } else {
     const nextId = state.heroes.reduce((m, h) => (h.tokenId > m ? h.tokenId : m), 0n) + 1n;
     newHeroes = [];
@@ -2144,8 +2148,8 @@ async function cmdSetDefense(args: string[]): Promise<string> {
         args: [[a, b, c]],
       });
       const { txHash } = await signAndSend({ to: arena, data, from: player });
-      lines.push(`🔗 onchain tx: ${txHash}`);
-      lines.push(`   ${txUrl(txHash)}`);
+      const { formatTxLine } = await import("./utils/txDisplay.js");
+      lines.push(formatTxLine("setDefenseTeam", txHash));
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       lines.push(`⚠️ 写链失败 (本地已记录): ${msg}`);
@@ -2258,8 +2262,8 @@ async function cmdPvpChallenge(targetArg: string | undefined): Promise<string> {
       const finalWinner: 0 | 1 | 2 = chainWinner ?? result.winner;
 
       const rewardLines: string[] = [];
-      rewardLines.push(`🔗 onchain tx: ${txHash}`);
-      rewardLines.push(`   ${txUrl(txHash)}`);
+      const { formatTxLine: _fmtTx } = await import("./utils/txDisplay.js");
+      rewardLines.push(_fmtTx("challenge", txHash));
       if (finalWinner === 0) {
         state.reputation += 25;
         rewardLines.push(`🏆 擂台胜利!声望 +25 (当前: ${state.reputation})`);
@@ -2591,10 +2595,11 @@ async function cmdHeal(tokenIdArg?: string): Promise<string> {
     const cur = state.heroHealth[k];
     if (cur) state.heroHealth[k] = { ...cur, woundLevel: 0, cooldownUntil: 0 };
     saveState(state);
+    const { formatTxLine } = await import("./utils/txDisplay.js");
     return [
-      `🔗 模式: onchain`,
+      `🔗 模式: ${getMode()}`,
       `✅ ${SECT_NAMES[hero.sect]}·${hero.name} #${tokenId} 已康复`,
-      `🔗 healHero tx: ${txHash}`,
+      formatTxLine(`healHero #${tokenId}`, txHash),
     ].join("\n");
   }
 
@@ -3171,7 +3176,10 @@ async function cmdExchange(args: string[]): Promise<string> {
 
       lines.push(`🔥 已熔炼 ${ids.length} 位重复侠客 → +${ids.length * SHARDS_PER_DUPLICATE} 声望碎片`);
       lines.push(`   总碎片: ${state.shards}`);
-      lines.push(`   tx: ${txHash}`);
+      {
+        const { formatTxLine } = await import("./utils/txDisplay.js");
+        lines.push(formatTxLine(`exchangeDuplicate(${ids.length})`, txHash));
+      }
       return lines.join("\n");
     } catch (err) {
       lines.push(`⚠️ 上链熔炼失败: ${(err as Error).message}`);
@@ -3272,7 +3280,10 @@ async function cmdRefer(args: string[]): Promise<string> {
       saveState(state);
       lines.push(`✅ 已绑定推荐人: ${addr}`);
       lines.push(`   首次付费抽卡时,${addr} 将获得 ${REFERRAL_REWARD_ETH} ETH 卡券`);
-      lines.push(`   tx: ${txHash}`);
+      {
+        const { formatTxLine } = await import("./utils/txDisplay.js");
+        lines.push(formatTxLine("setReferrer", txHash));
+      }
       return lines.join("\n");
     } catch (err) {
       lines.push(`⚠️ 上链绑定失败: ${(err as Error).message}`);
@@ -3357,7 +3368,10 @@ async function cmdPityBoost(stepsArg?: string): Promise<string> {
       lines.push(`✨ 已消耗 ${cost} 碎片 → 保底 +${steps}`);
       lines.push(`   新保底进度: ${state.pityProgress.currentCount}/${SECT_PITY_THRESHOLD}`);
       lines.push(`   剩余碎片: ${state.shards}`);
-      lines.push(`   tx: ${txHash}`);
+      {
+        const { formatTxLine } = await import("./utils/txDisplay.js");
+        lines.push(formatTxLine(`pityBoost(+${steps})`, txHash));
+      }
       return lines.join("\n");
     } catch (err) {
       lines.push(`⚠️ 上链加速失败: ${(err as Error).message}`);
@@ -3504,7 +3518,10 @@ async function cmdDaily(): Promise<string> {
         dailyCount = String(tuple[2]);
       } catch {}
       lines.push(`✅ 今日福利已领取!本周累积 ${dailyCount}/7`);
-      lines.push(`   tx: ${txHash}`);
+      {
+        const { formatTxLine } = await import("./utils/txDisplay.js");
+        lines.push(formatTxLine("grantDailyMint", txHash));
+      }
       return lines.join("\n");
     } catch (err) {
       lines.push(`⚠️ 日登上链失败: ${(err as Error).message}`);
@@ -3573,7 +3590,10 @@ async function cmdAdminWithdraw(amountArg?: string, targetArg?: string): Promise
         getPublicClient().waitForTransactionReceipt({ hash: txHash }),
       );
       lines.push(`💸 已调度提款: ${amount} ETH → ${targetArg}`);
-      lines.push(`   tx: ${txHash}`);
+      {
+        const { formatTxLine } = await import("./utils/txDisplay.js");
+        lines.push(formatTxLine(`scheduleWithdrawal ${amount} ETH`, txHash));
+      }
       lines.push(`   ⏳ 48h 后可执行 (合约时间锁)`);
       lines.push(`   接下来: admin execute ${amount}`);
       return lines.join("\n");
@@ -3629,7 +3649,10 @@ async function cmdAdminExecute(amountArg?: string): Promise<string> {
         getPublicClient().waitForTransactionReceipt({ hash: txHash }),
       );
       lines.push(`✅ 执行提款: ${amount} ETH`);
-      lines.push(`   tx: ${txHash}`);
+      {
+        const { formatTxLine } = await import("./utils/txDisplay.js");
+        lines.push(formatTxLine(`executeWithdrawal ${amount} ETH`, txHash));
+      }
       return lines.join("\n");
     } catch (err) {
       lines.push(`⚠️ 执行失败: ${(err as Error).message}`);
